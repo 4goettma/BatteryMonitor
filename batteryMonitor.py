@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 
-filename = "/home/julian/battery.log"
+filename = "~/battery.log"
 
 def presentResults():
     global log
@@ -24,7 +24,7 @@ def presentResults():
     axes[1].set_ylabel("System Load", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     plt.show()
-    fig.savefig("/home/julian/battery.log.png", dpi=300)
+    fig.savefig(filename+".png", dpi=300)
 
 def restoreData():
     global log
