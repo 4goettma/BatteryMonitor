@@ -24,7 +24,7 @@ def presentResults():
     axes[1].set_ylabel("System Load", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     plt.show()
-    fig.savefig(filename+".png", dpi=300)
+    fig.savefig(filename+".png", dpi=600)
 
 def restoreData():
     global log
