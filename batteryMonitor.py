@@ -25,6 +25,7 @@ def presentResults():
     axes[1].tick_params(axis="y", colors="Orange")
     plt.show()
     fig.savefig(filename+".png", dpi=600)
+    fig.savefig(filename+".svg")
 
 def restoreData():
     global log
