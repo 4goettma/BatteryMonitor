@@ -45,7 +45,8 @@ def saveData():
 
 def signal_handler(signal, frame):
         if(signal == 2):
-            presentResults()
+            if (len(log) > 0):
+                presentResults()
         if (len(log) > 0 and log[len(log)-1] != [None,None,None]):
             # eine Lücke zum Graphen hinzufügen um zu verdeutlichen, dass hier die Aufzeichnung unterbrochen wurde
             log.append([None,None,None])
