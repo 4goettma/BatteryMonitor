@@ -65,7 +65,6 @@ def main():
     global log
     signal.signal(signal.SIGINT, signal_handler)
     restoreData()
-    #log = [[True,99,0.2], [True,89,0.6], [True,60,0.1],[True,50,0.7],[True,40,0.7],[True,35,0.7],[True,30,0.7], [True,10,0.8], [True,59,0.8], [True,22,1.0]]
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. 60 Sekunden vergangen sind
         time.sleep(60)
