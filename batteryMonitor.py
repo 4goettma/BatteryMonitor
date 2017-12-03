@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 
-filename = "~/battery.log"
+filename = "./battery.log"
 
 def presentResults():
     global log
