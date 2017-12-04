@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
+import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
+if (os.name == 'posix'):
+    import psutil
+elif (os.name == 'nt'):
+    from ctypes import *
+else:
+    print("Not implemented for this operation system.")
+    exit(0)
 
 filename = "./battery.log"
 
@@ -55,13 +62,40 @@ def signal_handler(signal, frame):
         sys.exit(0)
 
 def getPercentage():
-    return round(psutil.sensors_battery().percent,2)
+    if (os.name == 'posix'):
+        return round(psutil.sensors_battery().percent,2)
+    elif (os.name == 'nt'):
+        class PowerClass(Structure):
+            _fields_ = [('ACLineStatus', c_byte),
+                        ('BatteryFlag', c_byte),
+                        ('BatteryLifePercent', c_byte),
+                        ('Reserved1',c_byte),
+                        ('BatteryLifeTime',c_ulong),
+                        ('BatteryFullLifeTime',c_ulong)]
+        powerclass = PowerClass()
+        result = windll.kernel32.GetSystemPowerStatus(byref(powerclass))
+        return powerclass.BatteryLifePercent
 
 def getPower():
-    return psutil.sensors_battery().power_plugged
+    if (os.name == 'posix'):
+        return psutil.sensors_battery().power_plugged
+    elif (os.name == 'nt'):
+        class PowerClass(Structure):
+            _fields_ = [('ACLineStatus', c_byte),
+                        ('BatteryFlag', c_byte),
+                        ('BatteryLifePercent', c_byte),
+                        ('Reserved1',c_byte),
+                        ('BatteryLifeTime',c_ulong),
+                        ('BatteryFullLifeTime',c_ulong)]
+        powerclass = PowerClass()
+        result = windll.kernel32.GetSystemPowerStatus(byref(powerclass))
+        return (powerclass.ACLineStatus == 1)
 
 def getLoad():
-    return os.getloadavg()[0]
+    if (os.name == 'posix'):
+        return os.getloadavg()[0]
+    elif (os.name == 'nt'):
+        return 0
 
 def main():
     global log
