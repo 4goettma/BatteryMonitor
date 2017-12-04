@@ -67,6 +67,7 @@ def main():
     global log
     signal.signal(signal.SIGINT, signal_handler)
     restoreData()
+    print("Monitoring started.")
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. 60 Sekunden vergangen sind
         time.sleep(60)
