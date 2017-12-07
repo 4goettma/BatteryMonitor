@@ -112,7 +112,7 @@ def getLoad():
 def getWattage():
     # es wird einfach angenommen, dass ein angeschlossener Akku nicht entladen wird 
     w = int(open("/sys/class/power_supply/BAT0/power_now", "r").read()) / 1000000
-    if (getPower):
+    if (getPower()):
         return w
     else:
         return -1*w
