@@ -8,7 +8,7 @@ else:
     print("Not implemented for this operation system.")
     exit(0)
 
-filename = "./battery_PowerPercentageLoad.log"
+filename = "./battery_Power_Percentage_Load.log"
 
 def presentResults(showWindow):
     global log
