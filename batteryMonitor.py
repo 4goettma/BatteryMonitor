@@ -3,6 +3,9 @@ import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 if (os.name == 'posix'):
     import psutil
 elif (os.name == 'nt'):
+    print("Not implemented for this operation system.")
+    exit(0)
+    
     from ctypes import *
 else:
     print("Not implemented for this operation system.")
@@ -28,7 +31,7 @@ def presentResults(showWindow):
     for i in range(len(log)):
         data.append(log[i][3])
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
-    axes[1].set_ylabel("System Load", color="Orange")
+    axes[1].set_ylabel("Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     if(showWindow): plt.show()
     fig.savefig(filename+".png", dpi=600)
@@ -105,6 +108,14 @@ def getLoad():
         return os.getloadavg()[0]
     elif (os.name == 'nt'):
         return 0
+
+def getWattage():
+    # es wird einfach angenommen, dass ein angeschlossener Akku nicht entladen wird 
+    w = int(open("/sys/class/power_supply/BAT0/power_now", "r").read()) / 1000000
+    if (getPower):
+        return w
+    else:
+        return -1*w
 
 def getTime():
     t = time.localtime()
