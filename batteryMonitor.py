@@ -35,7 +35,7 @@ def presentResults(showWindow):
     for i in range(len(log)):
         data.append(log[i][3])
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
-    axes[1].set_ylabel("Wattage", color="Orange")
+    axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     if(showWindow): plt.show()
     fig.savefig(filename+".png", dpi=600)
@@ -113,13 +113,19 @@ def getLoad():
     elif (os.name == 'nt'):
         return 0
 
-def getWattage():
+def getBatteryWattage():
     # es wird einfach angenommen, dass ein angeschlossener Akku nicht entladen wird 
     w = int(open("/sys/class/power_supply/BAT0/power_now", "r").read()) / 1000000
     if (getPower()):
         return w
     else:
         return -1*w
+
+def getSystemWattage():
+    a = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
+    time.sleep(1)
+    b = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
+    return (b-a) / 1000000
 
 def getTime():
     t = time.localtime()
@@ -134,8 +140,8 @@ def main():
     print("Monitoring started.")
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. x Sekunden vergangen sind, sleep() an den Anfang setzen
-        time.sleep(sampleRate)
-        log.append([getTime(),getPower(),getPercentage(),getWattage()])
-        print(getTime(),"/",getPower(),"/",getPercentage(),"/",getWattage())
+        time.sleep(sampleRate-1)
+        log.append([getTime(),getPower(),getPercentage(),getBatteryWattage(),getSystemWattage()])
+        print(log[-1])
 
 main()
