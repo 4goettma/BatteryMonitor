@@ -9,7 +9,7 @@ if (os.name == 'posix'):
 elif (os.name == 'nt'):
     print("Not implemented for this operation system.")
     exit(0)
-    
+
     from ctypes import *
 else:
     print("Not implemented for this operation system.")
@@ -21,8 +21,14 @@ def presentResults(showWindow):
     global log
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
-    axes = [ax, ax.twinx()]
+    axes = [ax, ax.twinx(), ax.twinx()]
     axes[0].set_xlabel("time in 1/"+str(int(60/sampleRate))+" minutes ("+str(int(60/sampleRate))+" units = 1 minute)")
+    
+    axes[1].set_autoscale_on(False)
+    axes[2].set_autoscale_on(False)
+    axes[1].axis([0,len(log),0.-30,60.0])
+    axes[2].axis([0,len(log),0.-30,60.0])
+
     data = []
     for i in range(len(log)):
         data.append(log[i][2])
@@ -37,6 +43,14 @@ def presentResults(showWindow):
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
     axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
+    
+    data = []
+    for i in range(len(log)):
+        data.append(log[i][4])
+    axes[2].plot(data, marker="", linestyle="default", color="Blue")
+    axes[2].set_ylabel("System Wattage", color="Blue")
+    axes[2].tick_params(axis="y", colors="Blue")
+    
     if(showWindow): plt.show()
     fig.savefig(filename+".png", dpi=600)
     fig.savefig(filename+".svg")
@@ -63,9 +77,9 @@ def signal_handler_SIGINT(signal, frame):
         if(signal == 2):
             if (len(log) > 0):
                 presentResults(True)
-        if (len(log) > 0 and log[len(log)-1] != [None,None,None,None]):
+        if (len(log) > 0 and log[len(log)-1] != [None,None,None,None,None]):
             # eine Lücke zum Graphen hinzufügen um zu verdeutlichen, dass hier die Aufzeichnung unterbrochen wurde
-            log.append([None,None,None,None])
+            log.append([None,None,None,None,None])
         saveData()
         sys.exit(0)
 
@@ -113,19 +127,20 @@ def getLoad():
     elif (os.name == 'nt'):
         return 0
 
+# positive Wattzahl = Batterie wird entladen, negative Wattzahl = Batterie wird geladen
 def getBatteryWattage():
     # es wird einfach angenommen, dass ein angeschlossener Akku nicht entladen wird 
     w = int(open("/sys/class/power_supply/BAT0/power_now", "r").read()) / 1000000
     if (getPower()):
-        return w
+        return (-1)*w
     else:
-        return -1*w
+        return w
 
-def getSystemWattage():
+def getSystemWattage(secs):
     a = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
-    time.sleep(1)
+    time.sleep(secs)
     b = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
-    return (b-a) / 1000000
+    return (b-a) / 1000000 / secs
 
 def getTime():
     t = time.localtime()
@@ -140,8 +155,8 @@ def main():
     print("Monitoring started.")
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. x Sekunden vergangen sind, sleep() an den Anfang setzen
-        time.sleep(sampleRate-1)
-        log.append([getTime(),getPower(),getPercentage(),getBatteryWattage(),getSystemWattage()])
+        #time.sleep(sampleRate)
+        log.append([getTime(),getPower(),getPercentage(),getBatteryWattage(),getSystemWattage(sampleRate)])
         print(log[-1])
 
 main()
