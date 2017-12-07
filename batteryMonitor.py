@@ -10,7 +10,7 @@ else:
 
 filename = "./battery.log"
 
-def presentResults():
+def presentResults(showWindow):
     global log
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
@@ -30,7 +30,7 @@ def presentResults():
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
     axes[1].set_ylabel("System Load", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
-    plt.show()
+    if(showWindow): plt.show()
     fig.savefig(filename+".png", dpi=600)
     fig.savefig(filename+".svg")
 
@@ -45,21 +45,30 @@ def restoreData():
     else:
         log = []
 
+# Performance-Problem: Bei unrealistisch großen Logs wird bei jedem Speichern der komplette Datensatz neu geschrieben
 def saveData():
     global log
     db_file = open(filename, "w")
     db_file.write(json.dumps(log))
     db_file.close()
 
-def signal_handler(signal, frame):
+def signal_handler_SIGINT(signal, frame):
         if(signal == 2):
             if (len(log) > 0):
-                presentResults()
+                presentResults(True)
         if (len(log) > 0 and log[len(log)-1] != [None,None,None]):
             # eine Lücke zum Graphen hinzufügen um zu verdeutlichen, dass hier die Aufzeichnung unterbrochen wurde
             log.append([None,None,None])
         saveData()
         sys.exit(0)
+
+#Zwischendurch bereits Daten rendern
+def signal_handler_SIGUSR1(signal, frame):
+    presentResults(False)
+
+#Zwischendurch bereits Daten sichern
+def signal_handler_SIGUSR2(signal, frame):
+    saveData()
 
 def getPercentage():
     if (os.name == 'posix'):
@@ -99,7 +108,9 @@ def getLoad():
 
 def main():
     global log
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler_SIGINT)
+    signal.signal(signal.SIGUSR1, signal_handler_SIGUSR1)
+    signal.signal(signal.SIGUSR2, signal_handler_SIGUSR2)
     restoreData()
     print("Monitoring started.")
     while(True):
