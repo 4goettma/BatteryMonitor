@@ -121,12 +121,6 @@ def getBatteryWattage():
     else:
         return -1*w
 
-def getSystemWattage():
-    a = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
-    time.sleep(1)
-    b = int(open("/sys/class/powercap/intel-rapl:0/energy_uj", "r").read())
-    return (b-a) / 1000000
-
 def getTime():
     t = time.localtime()
     return str(t.tm_year)+"-"+str(t.tm_mon)+"-"+str(t.tm_mday)+"_"+str(t.tm_hour)+":"+str(t.tm_min)+":"+str(t.tm_sec)
@@ -140,8 +134,8 @@ def main():
     print("Monitoring started.")
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. x Sekunden vergangen sind, sleep() an den Anfang setzen
-        time.sleep(sampleRate-1)
-        log.append([getTime(),getPower(),getPercentage(),getBatteryWattage(),getSystemWattage()])
+        time.sleep(sampleRate)
+        log.append([getTime(),getPower(),getPercentage(),getBatteryWattage()])
         print(log[-1])
 
 main()
