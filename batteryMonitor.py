@@ -18,7 +18,7 @@ def presentResults(showWindow):
     axes[0].set_xlabel("time in minutes")
     data = []
     for i in range(len(log)):
-        data.append(log[i][1])
+        data.append(log[i][2])
     axes[0].plot(data, marker="", linestyle="default", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
@@ -26,7 +26,7 @@ def presentResults(showWindow):
 
     data = []
     for i in range(len(log)):
-        data.append(log[i][2])
+        data.append(log[i][3])
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
     axes[1].set_ylabel("System Load", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
@@ -56,9 +56,9 @@ def signal_handler_SIGINT(signal, frame):
         if(signal == 2):
             if (len(log) > 0):
                 presentResults(True)
-        if (len(log) > 0 and log[len(log)-1] != [None,None,None]):
+        if (len(log) > 0 and log[len(log)-1] != [None,None,None,None]):
             # eine Lücke zum Graphen hinzufügen um zu verdeutlichen, dass hier die Aufzeichnung unterbrochen wurde
-            log.append([None,None,None])
+            log.append([None,None,None,None])
         saveData()
         sys.exit(0)
 
@@ -106,6 +106,10 @@ def getLoad():
     elif (os.name == 'nt'):
         return 0
 
+def getTime():
+    t = time.localtime()
+    return str(t.tm_year)+"-"+str(t.tm_mon)+"-"+str(t.tm_mday)+"_"+str(t.tm_hour)+":"+str(t.tm_min)+":"+str(t.tm_sec)
+
 def main():
     global log
     signal.signal(signal.SIGINT, signal_handler_SIGINT)
@@ -118,5 +122,7 @@ def main():
         time.sleep(60)
         log.append([getPower(),getPercentage(),getLoad()])
         print(getPower(),"/",getPercentage(),"/",getLoad())
+        log.append([getTime(),getPower(),getPercentage(),getWattage()])
+        print(getTime(),"/",getPower(),"/",getPercentage(),"/",getWattage())
 
 main()
