@@ -120,8 +120,6 @@ def main():
     while(True):
         # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. 60 Sekunden vergangen sind
         time.sleep(60)
-        log.append([getPower(),getPercentage(),getLoad()])
-        print(getPower(),"/",getPercentage(),"/",getLoad())
         log.append([getTime(),getPower(),getPercentage(),getWattage()])
         print(getTime(),"/",getPower(),"/",getPercentage(),"/",getWattage())
 
