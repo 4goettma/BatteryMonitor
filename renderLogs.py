@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 
-filename = "./battery.log"
+# 3 = every 3 seconds
+sampleRate = 3
+
+filename = "./battery_Time_Power_Percentage_BatteryWattage.log"
 
 def renderResults():
-    global log
+    global log, res
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
     axes = [ax, ax.twinx()]
-    axes[0].set_xlabel("time in minutes")
+    axes[0].set_xlabel("time in 1/"+str(int(60/sampleRate))+" minutes ("+str(int(60/sampleRate))+" units = 1 minute)")
     data = []
     for i in range(len(log)):
-        data.append(log[i][1])
+        data.append(log[i][2])
     axes[0].plot(data, marker="", linestyle="default", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
@@ -19,9 +22,9 @@ def renderResults():
 
     data = []
     for i in range(len(log)):
-        data.append(log[i][2])
+        data.append(log[i][3])
     axes[1].plot(data, marker="", linestyle="default", color="Orange")
-    axes[1].set_ylabel("System Load", color="Orange")
+    axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     fig.savefig(filename+".png", dpi=res)
     fig.savefig(filename+".svg")
