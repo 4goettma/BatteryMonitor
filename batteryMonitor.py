@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# 3 = every 3 seconds
+sampleRate = 3
+
 import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 if (os.name == 'posix'):
     import psutil
@@ -18,7 +22,7 @@ def presentResults(showWindow):
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
     axes = [ax, ax.twinx()]
-    axes[0].set_xlabel("time in minutes")
+    axes[0].set_xlabel("time in 1/"+str(int(60/sampleRate))+" minutes ("+str(int(60/sampleRate))+" units = 1 minute)")
     data = []
     for i in range(len(log)):
         data.append(log[i][2])
@@ -129,8 +133,8 @@ def main():
     restoreData()
     print("Monitoring started.")
     while(True):
-        # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. 60 Sekunden vergangen sind
-        time.sleep(60)
+        # damit sichergestellt ist, dass zwischen zwei Programmaufrufen min. x Sekunden vergangen sind, sleep() an den Anfang setzen
+        time.sleep(sampleRate)
         log.append([getTime(),getPower(),getPercentage(),getWattage()])
         print(getTime(),"/",getPower(),"/",getPercentage(),"/",getWattage())
 
