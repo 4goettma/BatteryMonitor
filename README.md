@@ -1,2 +1,2 @@
 # BatteryMonitor
-Logs battery percentage and system load
+Logs battery percentage and wattage

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 
-# 3 = every 3 seconds
-sampleRate = 3
+# 1 = every 1 seconds
+sampleRate = 1
 
 filename = "./battery_Time_Power_Percentage_BatteryWattage.log"
 
@@ -11,11 +11,14 @@ def renderResults():
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
     axes = [ax, ax.twinx()]
-    axes[0].set_xlabel("time in 1/"+str(int(60/sampleRate))+" minutes ("+str(int(60/sampleRate))+" units = 1 minute)")
+    if (sampleRate == 1):
+        axes[0].set_xlabel("time in seconds")
+    else:
+        axes[0].set_xlabel("time in 1/{0} minutes ({0} units = 1 minute)".format(int(60/sampleRate)))
     data = []
     for i in range(len(log)):
         data.append(log[i][2])
-    axes[0].plot(data, marker="", linestyle="default", color="Black")
+    axes[0].plot(data, marker="", linestyle="default", linewidth="0.33", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
     axes[0].grid(linestyle="dotted")
@@ -23,10 +26,15 @@ def renderResults():
     data = []
     for i in range(len(log)):
         data.append(log[i][3])
-    axes[1].plot(data, marker="", linestyle="default", color="Orange")
+    axes[1].plot(data, marker="", linestyle="default", linewidth="0.33", color="Orange")
     axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
-    fig.savefig(filename+".png", dpi=res)
+    if (res != 0):
+        fig.savefig(filename+".png", dpi=res)
+    else:
+        fig.savefig(filename+"_0300dpi.png", dpi=300)
+        fig.savefig(filename+"_0600dpi.png", dpi=600)
+        fig.savefig(filename+"_3000dpi.png", dpi=3000)
     fig.savefig(filename+".svg")
 
 def restoreData():
@@ -42,7 +50,7 @@ def restoreData():
 
 def main():
     global log, res
-    res = 600
+    res = 0
     if (len(sys.argv)>1):
         res = int(sys.argv[1])
     restoreData()

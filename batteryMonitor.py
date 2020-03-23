@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
-# 3 = every 3 seconds
-sampleRate = 3
+# TODO:
+# - don't log date
+# - handle "no battery present"
+
+# 1 = every 1 seconds
+sampleRate = 1
 
 import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 if (os.name == 'posix'):
@@ -9,7 +13,7 @@ if (os.name == 'posix'):
 elif (os.name == 'nt'):
     print("Not implemented for this operation system.")
     exit(0)
-    
+
     from ctypes import *
 else:
     print("Not implemented for this operation system.")
@@ -22,11 +26,14 @@ def presentResults(showWindow):
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
     axes = [ax, ax.twinx()]
-    axes[0].set_xlabel("time in 1/"+str(int(60/sampleRate))+" minutes ("+str(int(60/sampleRate))+" units = 1 minute)")
+    if (sampleRate == 1):
+        axes[0].set_xlabel("time in seconds")
+    else:
+        axes[0].set_xlabel("time in 1/{0} minutes ({0} units = 1 minute)".format(int(60/sampleRate)))
     data = []
     for i in range(len(log)):
         data.append(log[i][2])
-    axes[0].plot(data, marker="", linestyle="default", color="Black")
+    axes[0].plot(data, marker="", linestyle="default", linewidth="0.33", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
     axes[0].grid(linestyle="dotted")
@@ -34,7 +41,7 @@ def presentResults(showWindow):
     data = []
     for i in range(len(log)):
         data.append(log[i][3])
-    axes[1].plot(data, marker="", linestyle="default", color="Orange")
+    axes[1].plot(data, marker="", linestyle="default", linewidth="0.33", color="Orange")
     axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     if(showWindow): plt.show()
