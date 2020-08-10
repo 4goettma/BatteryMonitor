@@ -33,7 +33,7 @@ def presentResults(showWindow):
     data = []
     for i in range(len(log)):
         data.append(log[i][2])
-    axes[0].plot(data, marker="", linestyle="default", linewidth="0.33", color="Black")
+    axes[0].plot(data, marker="", linestyle="solid", linewidth="0.33", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
     axes[0].grid(linestyle="dotted")
@@ -41,7 +41,7 @@ def presentResults(showWindow):
     data = []
     for i in range(len(log)):
         data.append(log[i][3])
-    axes[1].plot(data, marker="", linestyle="default", linewidth="0.33", color="Orange")
+    axes[1].plot(data, marker="", linestyle="solid", linewidth="0.33", color="Orange")
     axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
     if(showWindow): plt.show()
