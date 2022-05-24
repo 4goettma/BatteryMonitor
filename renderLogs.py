@@ -1,29 +1,40 @@
 #!/usr/bin/env python3
 import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 
-filename = "./battery_Power_Percentage_Load.log"
+# 1 = every 1 seconds
+sampleRate = 1
+
+filename = "{}/battery_Time_Power_Percentage_BatteryWattage.log".format(os.path.dirname(os.path.realpath(__file__)))
 
 def renderResults():
-    global log
+    global log, res
     fig, ax = plt.subplots()
     # Twin the x-axis twice to make independent y-axes.
     axes = [ax, ax.twinx()]
-    axes[0].set_xlabel("time in minutes")
+    if (sampleRate == 1):
+        axes[0].set_xlabel("time in seconds")
+    else:
+        axes[0].set_xlabel("time in 1/{0} minutes ({0} units = 1 minute)".format(int(60/sampleRate)))
     data = []
     for i in range(len(log)):
-        data.append(log[i][1])
-    axes[0].plot(data, marker="", linestyle="default", color="Black")
+        data.append(log[i][2])
+    axes[0].plot(data, marker="", linestyle="solid", linewidth="0.33", color="Black")
     axes[0].set_ylabel("Battery Percentage", color="Black")
     axes[0].tick_params(axis="y", colors="Black")
     axes[0].grid(linestyle="dotted")
 
     data = []
     for i in range(len(log)):
-        data.append(log[i][2])
-    axes[1].plot(data, marker="", linestyle="default", color="Orange")
-    axes[1].set_ylabel("System Load", color="Orange")
+        data.append(log[i][3])
+    axes[1].plot(data, marker="", linestyle="solid", linewidth="0.33", color="Orange")
+    axes[1].set_ylabel("Battery Wattage", color="Orange")
     axes[1].tick_params(axis="y", colors="Orange")
-    fig.savefig(filename+".png", dpi=res)
+    if (res != 0):
+        fig.savefig(filename+".png", dpi=res)
+    else:
+        fig.savefig(filename+"_0300dpi.png", dpi=300)
+        fig.savefig(filename+"_0600dpi.png", dpi=600)
+        fig.savefig(filename+"_3000dpi.png", dpi=3000)
     fig.savefig(filename+".svg")
 
 def restoreData():
@@ -39,7 +50,7 @@ def restoreData():
 
 def main():
     global log, res
-    res = 600
+    res = 0
     if (len(sys.argv)>1):
         res = int(sys.argv[1])
     restoreData()
