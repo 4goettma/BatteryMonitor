@@ -9,6 +9,7 @@ sampleRate = 1
 battery = '' #'BAT0', 'BAT1' 
 
 import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
+mutex = False
 
 if (battery == ''):
     battery = sys.argv[1]
@@ -72,6 +73,9 @@ def saveData():
     db_file.close()
 
 def signal_handler_SIGINT(signal, frame):
+    global mutex
+    if (mutex == False):
+        mutex = True
         if(signal == 2):
             if (len(log) > 0):
                 presentResults(True)
