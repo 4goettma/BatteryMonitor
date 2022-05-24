@@ -4,7 +4,7 @@ import psutil, time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
 # 1 = every 1 seconds
 sampleRate = 1
 
-filename = "./battery_Time_Power_Percentage_BatteryWattage.log"
+filename = "{}/battery_Time_Power_Percentage_BatteryWattage.log".format(os.path.dirname(os.path.realpath(__file__)))
 
 def renderResults():
     global log, res

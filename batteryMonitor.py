@@ -25,7 +25,7 @@ else:
     print("Not implemented for this operation system.")
     exit(0)
 
-filename = "./battery_Time_Power_Percentage_BatteryWattage.log"
+filename = "{}/battery_Time_Power_Percentage_BatteryWattage.log".format(os.path.dirname(os.path.realpath(__file__)))
 
 def presentResults(showWindow):
     global log
