@@ -6,8 +6,13 @@
 
 # 1 = every 1 seconds
 sampleRate = 1
+battery = '' #'BAT0', 'BAT1' 
 
 import time, sys, signal, os, json, pathlib, matplotlib.pyplot as plt
+
+if (battery == ''):
+    battery = sys.argv[1]
+
 if (os.name == 'posix'):
     import psutil
 elif (os.name == 'nt'):
@@ -122,7 +127,7 @@ def getLoad():
 
 def getBatteryWattage():
     # es wird einfach angenommen, dass ein angeschlossener Akku nicht entladen wird 
-    w = int(open("/sys/class/power_supply/BAT0/power_now", "r").read()) / 1000000
+    w = int(open("/sys/class/power_supply/{}/power_now".format(battery), "r").read()) / 1000000
     if (getPower()):
         return w
     else:
